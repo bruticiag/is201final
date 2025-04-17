@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Suggestion App</title>
+    <style>
+        body {
+            font-family: "Georgia", serif; /* More austere font */
+            background-color: #6A2E1A; /* Dark auburn background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff; /* White text for contrast */
+        }
+        .container {
+            background-color: #9E2A2F; /* Auburn container */
+            padding: 30px; /* Increased padding for a more spacious feel */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 500px; /* Increased width for a larger box */
+        }
+        h1 {
+            font-size: 26px; /* Slightly larger font for the header */
+            color: #f39c12; /* Gold for the header */
+        }
+        p {
+            font-size: 18px; /* Increased font size for the description */
+            color: #ecf0f1; /* Light gray for general text */
+        }
+        label {
+            font-size: 16px;
+            color: #ecf0f1;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Create 2 columns */
+            gap: 15px; /* Space between buttons */
+            justify-items: center; /* Center the buttons */
+            margin-top: 15px;
+        }
+        .button-group button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #6A2E1A; /* Dark auburn button background */
+            color: white;
+            border: 2px solid #f39c12; /* Gold border */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for color */
+            width: 120px;
+        }
+        .button-group button:hover {
+            background-color: #f39c12; /* Gold on hover */
+            color: #6A2E1A; /* Dark auburn text on hover */
+        }
+        .button-group button.selected {
+            background-color: #f39c12; /* Gold for selected button */
+            color: #6A2E1A; /* Dark auburn text for selected button */
+        }
+        .result {
+            font-size: 20px; /* Larger font size for the result */
+            color: #f39c12; /* Gold for the suggestion text */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="scratch.html" style="text-decoration:none; color:#fff; background-color:#6A2E1A">Go Home</a>
+    <h1>Food Suggestion Based on Your Preferences</h1>
+    <p>Choose your favorite season, movie, and book to get a food suggestion!</p>
+
+    <form id="preferenceForm">
+        <label for="season">Favorite Season:</label><br>
+        <div class="button-group" id="seasonButtons">
+            <button type="button" data-value="spring">Spring</button>
+            <button type="button" data-value="summer">Summer</button>
+            <button type="button" data-value="autumn">Autumn</button>
+            <button type="button" data-value="winter">Winter</button>
+        </div><br><br>
+
+        <label for="movie">Favorite Movie:</label><br>
+        <div class="button-group" id="movieButtons">
+            <button type="button" data-value="action">Action</button>
+            <button type="button" data-value="romance">Romance</button>
+            <button type="button" data-value="comedy">Comedy</button>
+            <button type="button" data-value="horror">Horror</button>
+        </div><br><br>
+
+        <label for="book">Favorite Book:</label><br>
+        <div class="button-group" id="bookButtons">
+            <button type="button" data-value="mystery">Mystery</button>
+            <button type="button" data-value="fantasy">Fantasy</button>
+            <button type="button" data-value="science-fiction">Science Fiction</button>
+            <button type="button" data-value="historical">Historical</button>
+        </div><br><br>
+    </form>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const foodCombinations = {
+        "spring_action_mystery": "A light grilled chicken salad with a side of mystery-flavored popcorn.",
+        "spring_action_fantasy": "A refreshing cucumber and mint yogurt bowl, perfect for a fantasy world adventure.",
+        "spring_action_science-fiction": "Futuristic smoothies with chia seeds and fruit cubes!",
+        "spring_action_historical": "A classic apple pie, fresh and warm, to go with historical tales.",
+        "spring_romance_mystery": "Chocolate fondue with fresh strawberries, perfect for a romantic mystery.",
+        "spring_romance_fantasy": "Whimsical cupcakes topped with edible glitter and vanilla frosting.",
+        "spring_romance_science-fiction": "A cosmic fruit salad with star-shaped watermelon and blueberries.",
+        "spring_romance_historical": "Homemade scones with jam and a cup of classic English tea.",
+        "spring_comedy_mystery": "Popcorn and nachos, served with a side of sweet and salty pretzels.",
+        "spring_comedy_fantasy": "Cheese and fruit platter with a fun magical twist (think rainbow-colored cheese!).",
+        "spring_comedy_science-fiction": "A high-tech snack bar with protein bites and energy-boosting smoothies.",
+        "spring_comedy_historical": "Tea sandwiches with cucumber and smoked salmon, perfect for a light laugh.",
+        "spring_horror_mystery": "Creepy spider cookies with black icing and a spooky, eerie punch.",
+        "spring_horror_fantasy": "Blackberry pie with a magical dark twist, maybe a touch of lavender.",
+        "spring_horror_science-fiction": "Space-themed cupcakes with galaxy frosting and silver star sprinkles.",
+        "spring_horror_historical": "A classic pumpkin soup served with spooky bread shaped like skulls.",
+        "summer_action_mystery": "Spicy BBQ ribs with a smoky rub and tangy coleslaw.",
+        "summer_action_fantasy": "Grilled kebabs with colorful peppers and pineapple.",
+        "summer_action_science-fiction": "A robot-shaped burger with futuristic flavors like wasabi mayo.",
+        "summer_action_historical": "A platter of ancient Greek-inspired foods, like olives, pita, and hummus.",
+        "summer_romance_mystery": "Strawberry shortcake with a sweet cream topping, paired with a mystery novel.",
+        "summer_romance_fantasy": "Iced lemon sorbet served in a chilled crystal glass.",
+        "summer_romance_science-fiction": "Glowing, neon-colored cupcakes with edible glitter.",
+        "summer_romance_historical": "A decadent fruit tart with a historical twist of custard.",
+        "summer_comedy_mystery": "Fresh fruit salad and ice-cold lemonade to keep things refreshing.",
+        "summer_comedy_fantasy": "Rainbow-colored cotton candy and ice cream sundaes.",
+        "summer_comedy_science-fiction": "Alien-shaped cookies with green frosting and futuristic soda.",
+        "summer_comedy_historical": "Mini sliders with vintage-style root beer floats.",
+        "summer_horror_mystery": "A bloody red velvet cake with a dark chocolate drizzle.",
+        "summer_horror_fantasy": "Gothic cupcakes with dark chocolate frosting and a hint of mint.",
+        "summer_horror_science-fiction": "Mars-inspired red chili with a futuristic twist.",
+        "summer_horror_historical": "Ancient baked goods like honey cakes and spiced nuts.",
+        "autumn_action_mystery": "Pumpkin soup with crispy bacon bits and a twist of black pepper.",
+        "autumn_action_fantasy": "Autumn harvest salad with roasted butternut squash and goat cheese.",
+        "autumn_action_science-fiction": "A steaming bowl of chili with futuristic protein cubes.",
+        "autumn_action_historical": "A hearty roast dinner with root vegetables and mashed potatoes.",
+        "autumn_romance_mystery": "Caramel apples dipped in chocolate and sprinkled with cinnamon.",
+        "autumn_romance_fantasy": "Spiced hot chocolate with a dash of cinnamon and whipped cream.",
+        "autumn_romance_science-fiction": "Pumpkin-flavored ice cream served in a futuristic cone.",
+        "autumn_romance_historical": "Apple cider with warm cinnamon rolls to set the mood.",
+        "autumn_comedy_mystery": "A fun pumpkin-flavored cake with a sweet and spicy glaze.",
+        "autumn_comedy_fantasy": "Magical pumpkin pie with hints of nutmeg and ginger.",
+        "autumn_comedy_science-fiction": "Futuristic donuts with candy-coated toppings and sweet syrup.",
+        "autumn_comedy_historical": "A light apple crisp with oatmeal and cinnamon to go with the story.",
+        "autumn_horror_mystery": "Blood-red velvet cupcakes with a dark chocolate filling.",
+        "autumn_horror_fantasy": "Spicy apple cider and caramel popcorn for a twisted, fun treat.",
+        "autumn_horror_science-fiction": "Frighteningly dark chocolate mousse with blackberries.",
+        "autumn_horror_historical": "A hauntingly good stew served in a bread bowl.",
+        "winter_action_mystery": "Beef stew with thick bread, perfect for a cold night with a good mystery.",
+        "winter_action_fantasy": "A hot pot with sizzling meats and winter vegetables.",
+        "winter_action_science-fiction": "Neon-colored ramen noodles in a space-age broth.",
+        "winter_action_historical": "A hearty winter pie made with root vegetables and beef.",
+        "winter_romance_mystery": "A rich chocolate fondue with fresh strawberries and marshmallows.",
+        "winter_romance_fantasy": "Snowflake-shaped sugar cookies with royal icing.",
+        "winter_romance_science-fiction": "Futuristic spiced hot chocolate served with whipped cream and silver sprinkles.",
+        "winter_romance_historical": "Gingerbread men decorated with vintage royal icing.",
+        "winter_comedy_mystery": "A fun winter fruit salad with cranberry and pomegranate.",
+        "winter_comedy_fantasy": "Magical snowcones and frosty desserts with bright colors.",
+        "winter_comedy_science-fiction": "Star-shaped cookies with glowing frosting.",
+        "winter_comedy_historical": "Classic apple pie with a touch of cinnamon and nutmeg.",
+        "winter_horror_mystery": "A blood-red punch served with a spooky cake.",
+        "winter_horror_fantasy": "Frightful chocolate cupcakes with ghost-shaped frosting.",
+        "winter_horror_science-fiction": "Frozen popcorn balls with icy colors and a cold crunch.",
+        "winter_horror_historical": "Roasted chestnuts and spiced wine for a chilling treat."
+    };
+
+    let selectedSeason = '';
+    let selectedMovie = '';
+    let selectedBook = '';
+
+    document.getElementById('seasonButtons').addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON') {
+            selectedSeason = event.target.getAttribute('data-value');
+            toggleSelectedButton(event.target);
+            updateSelection();
+        }
+    });
+
+    document.getElementById('movieButtons').addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON') {
+            selectedMovie = event.target.getAttribute('data-value');
+            toggleSelectedButton(event.target);
+            updateSelection();
+        }
+    });
+
+    document.getElementById('bookButtons').addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON') {
+            selectedBook = event.target.getAttribute('data-value');
+            toggleSelectedButton(event.target);
+            updateSelection();
+        }
+    });
+
+    function toggleSelectedButton(button) {
+        const allButtons = button.parentElement.querySelectorAll('button');
+        allButtons.forEach(b => b.classList.remove('selected')); // Remove 'selected' from all buttons
+        button.classList.add('selected'); // Add 'selected' to the clicked button
+    }
+
+    function updateSelection() {
+        if (selectedSeason && selectedMovie && selectedBook) {
+            const combination = `${selectedSeason}_${selectedMovie}_${selectedBook}`;
+            const foodSuggestion = foodCombinations[combination];
+            document.getElementById('result').textContent = foodSuggestion || "No suggestion available for this combination!";
+        }
+    }
+</script>
+
+</body>
+</html>
